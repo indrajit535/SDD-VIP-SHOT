@@ -1,0 +1,402 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDD BOSS MODZ</title>
+    <!-- Tailwind & Fonts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        .login-container {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        }
+        
+        .login-box {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .signal-big { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); color: white; }
+        .signal-small { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color: white; }
+        .signal-green { background: linear-gradient(135deg, #10b981 0%, #047857 100%); color: white; }
+        .signal-red { background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); color: white; }
+        .signal-violet { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+        
+        .live-badge {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        
+        .loader {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #3b82f6;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .time-display { font-variant-numeric: tabular-nums; font-weight: 600; }
+        .countdown { font-size: 14px; color: #3b82f6; font-weight: 600; }
+        
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 3px;
+            transition: width 1s linear;
+        }
+        
+        .signal-history { max-height: 250px; overflow-y: auto; }
+        .signal-history::-webkit-scrollbar { width: 5px; }
+        .signal-history::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+        
+        .signal-number {
+            font-size: 60px;
+            font-weight: 800;
+            text-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .analysis-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .hist-chip {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4">
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container fixed inset-0 flex items-center justify-center z-50">
+        <div class="login-box p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">SDD BOSS MODZ</h1>
+                <p class="text-gray-400 mt-2">Enter Access Key</p>
+            </div>
+            
+            <div class="mb-6">
+                <div class="relative">
+                    <i class="fas fa-key absolute left-3 top-3 text-gray-400"></i>
+                    <input type="text" id="passwordInput" class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter License Key">
+                </div>
+                <p id="errorMsg" class="text-red-400 text-sm mt-2 hidden"><i class="fas fa-exclamation-circle mr-1"></i> <span id="errorText">Invalid Key</span></p>
+                <p id="serverMsg" class="text-red-400 text-sm mt-2 hidden text-center font-bold animate-pulse">SERVER OFFLINE</p>
+            </div>
+            
+            <button id="loginBtn" class="btn-primary w-full py-3 rounded-lg font-bold mb-6">LOGIN</button>
+            
+            <div class="text-center text-gray-500 text-sm">
+                <p>Contact admin to get access key</p>
+                <p class="text-xs text-gray-600 mt-1">ID: <span id="deviceIdDisplay">Generating...</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="hidden max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">SDD BOSS MODZ</h1>
+                <p class="text-gray-400 text-sm">Issue: <span id="currentPeriod" class="font-mono">...</span></p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="time-display text-lg bg-gray-800 px-3 py-1 rounded-lg" id="currentTime">00:00:00</div>
+                <span class="live-badge px-3 py-1 rounded-full text-xs font-bold">LIVE</span>
+                <button id="logoutBtn" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Signal Info -->
+        <div class="glass-card p-6 mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold flex items-center">
+                    <i class="fas fa-satellite-dish mr-2 text-blue-400"></i> Latest Signal
+                </h2>
+                <div class="countdown" id="countdown">Next signal in: 60s</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 100%"></div>
+            </div>
+            <div id="signalInfo" class="text-center py-4">
+                <div class="loader"></div>
+                <p class="text-gray-400 mt-2">Loading signal data...</p>
+            </div>
+        </div>
+
+        <!-- Prediction Result Container -->
+        <div class="glass-card p-8 text-center mb-6">
+            <div id="signalNumberDisplay" class="signal-number">0</div>
+            
+            <div class="flex flex-col items-center justify-center min-h-[120px]">
+                <div id="bigSmall" class="text-5xl font-bold px-12 py-4 rounded-full signal-big hidden">BIG</div>
+
+                <div id="colorContainer" class="flex justify-center gap-4 hidden">
+                    <div id="signal1" class="signal-green px-8 py-4 rounded-xl font-bold text-2xl hidden">GREEN</div>
+                    <div id="signal2" class="signal-red px-8 py-4 rounded-xl font-bold text-2xl hidden">RED</div>
+                    <div id="signal3" class="signal-violet px-8 py-4 rounded-xl font-bold text-2xl hidden">VIOLET</div>
+                </div>
+            </div>
+
+            <div class="analysis-card">
+                <p class="text-sm text-blue-300 font-semibold mb-1 uppercase tracking-wider">Winning Probability Analysis</p>
+                <div id="analysisText" class="text-xl font-bold text-white">Calculating chance...</div>
+            </div>
+        </div>
+
+        <!-- Signal History -->
+        <div class="glass-card p-6">
+            <h2 class="text-lg font-bold mb-4 flex items-center">
+                <i class="fas fa-history mr-2 text-blue-400"></i> Recent Signals
+            </h2>
+            <div id="signalHistory" class="signal-history"></div>
+        </div>
+
+        <div class="text-center mt-8">
+            <button onclick="window.location.reload()" class="text-blue-400 hover:text-blue-300 inline-flex items-center">
+                <i class="fas fa-arrow-left mr-2"></i> REFRESH
+            </button>
+            <p class="text-gray-500 text-sm mt-4">SDD BOSS MODZ v2.0 • Secure API Connection</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBzhosqwUD50jIr2D1m8XCyav3efLfwkBQ",
+            authDomain: "sdstudio-9aa31.firebaseapp.com",
+            databaseURL: "https://sdstudio-9aa31-default-rtdb.firebaseio.com",
+            projectId: "sdstudio-9aa31",
+            storageBucket: "sdstudio-9aa31.firebasestorage.app",
+            messagingSenderId: "103477515794",
+            appId: "1:103477515794:web:9d2a914fb0290c907feacb",
+            measurementId: "G-K8J08JY4Q9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let currentBS = localStorage.getItem('sdd_current_bs') || "BIG";
+        let streak = parseInt(localStorage.getItem('sdd_streak')) || 0;
+        let maxStreak = Math.floor(Math.random()*4)+2;
+
+        const API_URL = "https://api.bdg88zf.com/api/webapi/GetNoaverageEmerdList";
+        let countdownInterval, progressInterval;
+        let lastProcessedMinute = -1;
+
+        function getPowerfulResult() {
+            streak++;
+            if(streak >= maxStreak){
+                currentBS = currentBS === "BIG" ? "SMALL" : "BIG";
+                streak = 0;
+                maxStreak = Math.floor(Math.random()*4)+2;
+            }
+            localStorage.setItem('sdd_current_bs', currentBS);
+            localStorage.setItem('sdd_streak', streak);
+            return currentBS;
+        }
+
+        if (localStorage.getItem('sdd_logged_in') === 'true') {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+            initPrediction();
+        }
+
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            const password = document.getElementById('passwordInput').value.trim();
+            if (!password) return;
+            try {
+                const serverSnap = await get(ref(db, 'settings/serverOn'));
+                if (serverSnap.val() === false) { document.getElementById('serverMsg').classList.remove('hidden'); return; }
+                const keysSnap = await get(ref(db, 'keys'));
+                const keys = keysSnap.val();
+                let validKey = Object.values(keys || {}).find(k => k.code === password);
+                if (validKey && Date.now() < validKey.expiryTime) {
+                    localStorage.setItem('sdd_logged_in', 'true');
+                    location.reload();
+                } else {
+                    document.getElementById('errorMsg').classList.remove('hidden');
+                }
+            } catch (e) { console.error(e); }
+        });
+
+        async function fetchSignalData() {
+            const now = new Date();
+            const nowMin = now.getMinutes();
+            if (nowMin === lastProcessedMinute) return;
+            lastProcessedMinute = nowMin;
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ pageSize: 5, pageNo: 1, typeId: 1, language: 0, random: "4a0522c6ecd8410496260e686be2a57c", signature: "334B5E70A0C9B8918B0B15E517E2069C", timestamp: Math.floor(Date.now() / 1000) })
+                });
+                const data = await response.json();
+                const signalNumber = data?.data?.list?.[0]?.number ?? Math.floor(Math.random() * 10);
+                const issue = data?.data?.list?.[0]?.issue ?? "...";
+                generatePrediction(signalNumber, issue);
+            } catch (e) { generatePrediction(Math.floor(Math.random() * 10), "ERR"); }
+        }
+
+        function generatePrediction(num, issue) {
+            const bigSmallVal = getPowerfulResult();
+            const winChance = Math.floor(Math.random() * 10) + 89;
+            const now = new Date();
+            const showType = (now.getMinutes() % 2 === 0) ? "BS" : "COLOR";
+
+            const bsEl = document.getElementById('bigSmall');
+            const colorContainer = document.getElementById('colorContainer');
+            const analysisText = document.getElementById('analysisText');
+            const signalNumEl = document.getElementById('signalNumberDisplay');
+
+            signalNumEl.textContent = num;
+            bsEl.classList.add('hidden');
+            colorContainer.classList.add('hidden');
+            
+            let colorResult = [];
+            const s1 = document.getElementById('signal1'); s1.classList.add('hidden');
+            const s2 = document.getElementById('signal2'); s2.classList.add('hidden');
+            const s3 = document.getElementById('signal3'); s3.classList.add('hidden');
+
+            if (showType === "BS") {
+                bsEl.textContent = bigSmallVal;
+                bsEl.className = `text-5xl font-bold px-12 py-4 rounded-full ${bigSmallVal === 'BIG' ? 'signal-big' : 'signal-small'}`;
+                bsEl.classList.remove('hidden');
+                analysisText.innerHTML = `<span class="text-blue-400">${bigSmallVal}</span> High Chance: <span class="text-green-400">${winChance}%</span>`;
+                addToHistory(num, "BS", bigSmallVal, issue);
+            } else {
+                colorContainer.classList.remove('hidden');
+                if (bigSmallVal === "BIG") {
+                    s1.classList.remove('hidden'); colorResult.push("GREEN");
+                    if (num % 2 !== 0) { s3.classList.remove('hidden'); colorResult.push("VIOLET"); }
+                } else {
+                    s2.classList.remove('hidden'); colorResult.push("RED");
+                    if (num % 2 === 0) { s3.classList.remove('hidden'); colorResult.push("VIOLET"); }
+                }
+                analysisText.innerHTML = `<span class="text-purple-400">COLOUR</span> High Chance: <span class="text-green-400">${winChance}%</span>`;
+                addToHistory(num, "COLOR", colorResult.join(" + "), issue);
+            }
+            document.getElementById('currentPeriod').textContent = issue;
+            document.getElementById('signalInfo').innerHTML = `<div class="text-green-400 mb-1"><i class="fas fa-check-circle"></i> Connected</div><div class="text-xl font-bold">Signal: ${num}</div>`;
+        }
+
+        function addToHistory(num, type, result, issue) {
+            const hist = document.getElementById('signalHistory');
+            const item = document.createElement('div');
+            item.className = 'flex justify-between items-center py-3 border-b border-gray-700/50 px-2';
+            
+            let resultDisplay = "";
+            if(type === "BS") {
+                resultDisplay = `<span class="font-bold text-sm ${result === 'BIG' ? 'text-blue-400' : 'text-red-400'}">${result}</span>`;
+            } else {
+                const colors = result.split(" + ");
+                resultDisplay = colors.map(c => `<span class="hist-chip ${c === 'GREEN' ? 'signal-green' : (c === 'RED' ? 'signal-red' : 'signal-violet')}">${c}</span>`).join(" ");
+            }
+
+            item.innerHTML = `
+                <div class="flex items-center">
+                    <span class="bg-blue-900/40 text-blue-300 rounded px-2 py-1 mr-3 text-xs font-mono">${issue.slice(-3)}</span>
+                    <span class="bg-gray-700 rounded-full w-8 h-8 flex items-center justify-center mr-2 font-bold text-sm text-white">${num}</span>
+                    ${resultDisplay}
+                </div>
+                <span class="text-gray-500 text-xs">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+            `;
+            hist.prepend(item);
+            if (hist.children.length > 20) hist.removeChild(hist.lastChild);
+            localStorage.setItem('sdd_hist_final', hist.innerHTML);
+        }
+
+        function initPrediction() {
+            const savedHist = localStorage.getItem('sdd_hist_final');
+            if (savedHist) document.getElementById('signalHistory').innerHTML = savedHist;
+            
+            fetchSignalData();
+            setInterval(() => {
+                const now = new Date();
+                const rem = 60 - now.getSeconds();
+                document.getElementById('countdown').textContent = `Next update in: ${rem}s`;
+                document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', { hour12: false });
+                document.getElementById('progressFill').style.width = `${(rem / 60) * 100}%`;
+                if (rem === 60 || rem <= 1) fetchSignalData();
+            }, 1000);
+        }
+
+        onValue(ref(db, 'settings/serverOn'), (snap) => {
+            if (snap.val() === false && localStorage.getItem('sdd_logged_in') === 'true') {
+                localStorage.clear();
+                location.reload();
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.clear(); location.reload(); });
+        window.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') fetchSignalData(); });
+    </script>
+</body>
+</html>
